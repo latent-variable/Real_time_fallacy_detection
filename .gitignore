@@ -1,6 +1,6 @@
 api_key.txt
 *.wav
-whisper-diarization/*
+whisper-diarization/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
