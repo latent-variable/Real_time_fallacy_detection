@@ -1,0 +1,11 @@
+
+# Core Libraries
+PyQt5==5.15.4
+PyAudio==0.2.11
+
+# API Libraries
+openai==0.27.0
+
+# Additional Libraries
+numpy==1.21.2
+torch==1.9.1
