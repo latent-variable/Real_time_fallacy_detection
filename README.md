@@ -3,7 +3,7 @@
 
 ## Overview
 
-This project aims to perform real-time fallacy detection during events like presidential debates. It uses the Whisper ASR API for audio transcription and the OpenAI ChatGPT API for natural language understanding and fallacy classification.
+This project aims to perform real-time fallacy detection during events like presidential debates. It uses the (Whisper)[https://github.com/openai/whisper] for audio transcription and the OpenAI ChatGPT API for natural language understanding and fallacy classification.
 
 ## Features
 
@@ -32,7 +32,8 @@ This project aims to perform real-time fallacy detection during events like pres
     ```
     pip install -r requirements.txt
     ```
-
+4. Installing VB-AUDIO, to forward audio ouput as an input device (*Optional) 
+    (VB-Audio)[https://vb-audio.com/Cable/]
 ## Usage
 
 Run the main script to start the application:
