@@ -1,0 +1,9 @@
+api_key.txt
+*.wav
+whisper-diarization/*
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+*.so
