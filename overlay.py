@@ -1,10 +1,10 @@
 import sys
 import threading
 from PyQt5.QtCore import Qt, QTimer, QPoint
-from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QVBoxLayout, QWidget, QScrollArea
+from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QVBoxLayout, QWidget, QGridLayout, QScrollArea, QSizeGrip
 
 from real_time_classifier import continuous_audio_transcription_and_classification
-from real_time_classifier import WHISPER_TEXTS, GPT_TEXTS
+from real_time_classifier import WHISPER_TEXTS, GPT_TEXTS, MAX_SEGEMENTS
 
 class TransparentOverlay(QMainWindow):
     def __init__(self, whs_model):
@@ -17,10 +17,10 @@ class TransparentOverlay(QMainWindow):
 
     def initUI(self):
         self.setWindowTitle('Transparent Overlay')
-        self.setGeometry(200, 200, 800, 600)
+        self.setGeometry(200, 200, 1000, 600)
         self.setWindowOpacity(0.8)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
+        self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
 
         # Create Scroll Areas
         self.scroll_area1 = QScrollArea(self)
@@ -52,12 +52,20 @@ class TransparentOverlay(QMainWindow):
         self.chatgpt_label.setStyleSheet('background-color: lightgreen; font-weight: bold; font-size: 16px;')
 
         # Layout setup
-        layout = QVBoxLayout()
-        layout.addWidget(self.scroll_area1)
-        layout.addWidget(self.scroll_area2)
+        # QVBoxLayout for the scroll areas
+        vbox_layout = QVBoxLayout()
+        vbox_layout.addWidget(self.scroll_area1)
+        vbox_layout.addWidget(self.scroll_area2)
+        # QGridLayout to include QVBoxLayout and QSizeGrip
+        grid_layout = QGridLayout()
+        grid_layout.addLayout(vbox_layout, 0, 0)
+        
+        # Add QSizeGrip to the QGridLayout
+        size_grip = QSizeGrip(self)
+        grid_layout.addWidget(size_grip, 1, 1, Qt.AlignBottom | Qt.AlignRight)
 
         container = QWidget()
-        container.setLayout(layout)
+        container.setLayout(grid_layout)
         self.setCentralWidget(container)
 
         # Run the continuous transcription and classification in a separate thread
@@ -97,8 +105,8 @@ class TransparentOverlay(QMainWindow):
 
 def get_whisper_transcription():
     global WHISPER_TEXTS
-    last_n_segments = WHISPER_TEXTS[-10:]
-    text = ' '.join(last_n_segments)
+    last_n_segments = WHISPER_TEXTS[-MAX_SEGEMENTS:]
+    text = ' - '.join(last_n_segments)
     return text
 
 def get_chatgpt_output():

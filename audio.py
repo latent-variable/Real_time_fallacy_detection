@@ -1,6 +1,6 @@
 import wave
 import pyaudio
-
+import configparser
 
 # Audio format Parameters for whisper
 FORMAT = pyaudio.paInt16  # 16-bit depth
@@ -33,7 +33,17 @@ def print_output_devices():
     # Terminate PyAudio
     p.terminate()
 
-def find_output_device_index(dname="Headphones (2- Razer Nari"):
+
+def find_output_device_index():
+    
+    # Initialize ConfigParser
+    config = configparser.ConfigParser()
+
+    # Read settings.ini file
+    config.read('settings.ini')
+    # Get values
+    device_output_name = config.get('Audio Settings', 'device_output_name')
+
     # Initialize PyAudio
     p = pyaudio.PyAudio()
     # Get total number of devices
@@ -44,12 +54,20 @@ def find_output_device_index(dname="Headphones (2- Razer Nari"):
         device_name = device_info.get('name')
 
         # Search for VB-Audio in the device name
-        if dname in device_name:
+        if device_output_name in device_name:
             return i
    
     return None
 
-def find_input_device_index(iname="VB-Audio"):
+def find_input_device_index():
+    
+    # Initialize ConfigParser
+    config = configparser.ConfigParser()
+
+    # Read settings.ini file
+    config.read('settings.ini')
+    # Get values
+    device_input_name = config.get('Audio Settings', 'device_input_name')
     p = pyaudio.PyAudio()
     info = p.get_host_api_info_by_index(0)
     numdevices = info.get('deviceCount')
@@ -59,7 +77,7 @@ def find_input_device_index(iname="VB-Audio"):
         device_name = device_info.get('name')
         
         # Search for VB-Audio in the device name
-        if iname in device_name:
+        if device_input_name in device_name:
             return i
     
     # Return None if not found
