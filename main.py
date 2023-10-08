@@ -3,8 +3,10 @@ from whs import load_model
 from overlay import launch_overlay
 
 def get_whisper_model():
-    
-    return load_model()
+   
+    whs_model = load_model()
+   
+    return whs_model
 
 def main(whs_model):
 

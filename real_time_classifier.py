@@ -1,4 +1,5 @@
 import wave
+import time
 import torch 
 import pyaudio
 import threading
@@ -11,7 +12,7 @@ from gpt import fallacy_classification, is_a_complete_statement
 # Global variables 
 WHISPER_TEXTS = []
 GPT_TEXTS = []
-MAX_SEGEMENTS = 10
+MAX_SEGEMENTS = 8
 audio_buffer_lock = threading.Lock()
 
 def save_byte_buffer(audio, audio_buffer, byte_size_chunk):
@@ -46,24 +47,25 @@ def get_last_segments(text_list):
 
 def transcription_callback(new_text):
     global WHISPER_TEXTS, GPT_TEXTS  # Declare the list as global so we can append to it
-    WHISPER_TEXTS.append(new_text)
+    WHISPER_TEXTS.append(new_text + '\n')
 
     text = get_last_segments( WHISPER_TEXTS )
     # print("\nTranscribed Text:", text)
    
     # Call chatgpt for fallacy classification
-    if len(WHISPER_TEXTS) % 8 == 0:
-       # if is_a_complete_statement(text):
-        GPT_TEXTS.append(fallacy_classification(text))
+    if len(WHISPER_TEXTS) > 8:
+        if len(WHISPER_TEXTS) % 4 == 0:
+        # if is_a_complete_statement(text):
+            GPT_TEXTS.append(fallacy_classification(text))
 
     # Get the last segments from the list
     # WHISPER_TEXTS = WHISPER_TEXTS[-MAX_SEGEMENTS:]
 
   
-
 def transcription(whs_model,  audio_tensor,  callback):
     # Model call to transcribe the data
     try:
+    
         transcription = whs_model.transcribe(audio_tensor, language='en', fp16=torch.cuda.is_available())
         # Process the transcription (e.g., fallacy detection)
         callback(transcription['text'])
@@ -140,4 +142,3 @@ def continuous_audio_transcription_and_classification(whs_model, stop_event):
             
     print('Exiting')
     
-                

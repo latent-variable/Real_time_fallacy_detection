@@ -11,4 +11,4 @@ numpy==1.21.2
 torch==1.9.1
 
 # OpenAI Whisper ASR
-openai-whisper
+openai-whisper 

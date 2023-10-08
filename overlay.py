@@ -84,7 +84,7 @@ class TransparentOverlay(QMainWindow):
         chatgpt_output = get_chatgpt_output()
 
         self.whisper_label.setText("Transcript: " + whisper_output)
-        self.chatgpt_label.setText("ChatGPT: " + chatgpt_output)
+        self.chatgpt_label.setText("LLM: " + chatgpt_output)
 
     def mousePressEvent(self, event):
         self.dragPos = event.globalPos()
@@ -111,7 +111,13 @@ def get_whisper_transcription():
 
 def get_chatgpt_output():
     global GPT_TEXTS
-    text = GPT_TEXTS[-1] if GPT_TEXTS else ""
+    # Check if the list has at least two elements
+    if len(GPT_TEXTS) >= 2:
+        last_two = GPT_TEXTS[-1:-3:-1]  # Get and reverse the last two strings
+        text = "\n\n ".join(last_two)  # Combine them
+    else:
+        text = GPT_TEXTS[-1] if GPT_TEXTS else ""
+    
     return text
 
 def launch_overlay(whs_model):
