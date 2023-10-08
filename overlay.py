@@ -105,7 +105,7 @@ class TransparentOverlay(QMainWindow):
 
 def get_whisper_transcription():
     global WHISPER_TEXTS
-    last_n_segments = WHISPER_TEXTS[-MAX_SEGEMENTS:]
+    last_n_segments = WHISPER_TEXTS[-12:]
     text = ' - '.join(last_n_segments)
     return text
 

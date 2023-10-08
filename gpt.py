@@ -8,9 +8,10 @@ def read_api_key(file_path = r'./api_key.txt'):
     
 # Initialize GPT-3 API Client
 openai.api_key = read_api_key()
-
+LAST_RESPONCE = ''
 
 def fallacy_classification(text, run_local =True):
+    global LAST_RESPONCE
      # Create a more nuanced prompt for ChatGPT
     prompt = f"""In the following debate excerpt, identify any logical fallacies by starting with the name of the fallacy, followed by a brief justification. 
     If the statement is factual or logical, or if no argument is present, state so explicitly. 
@@ -67,9 +68,10 @@ def fallacy_classification(text, run_local =True):
 
     Ad Hominem & Strawman - The first speaker accuses the opponent of exploiting undocumented workers, using it as an attack on the opponent's character rather than focusing on the issue of immigration policy. The second speaker claims that "millions of people have been moved out" under the previous administration but implies that the first speaker is unwilling to acknowledge this, creating a strawman argument. Both speakers divert from a constructive, evidence-based discussion on immigration policy.
 
+    {LAST_RESPONCE}
 
     Analyze the following debate excerpt for logical fallacies and format your response by starting with the name of the fallacy, followed by a brief justification.
-    If the statement is factual or logical, or if no argument is present, state so explicitly. 
+    If the statement is factual or logical, or if no argument is present, state so explicitly. Avoid covering the same points from the Last Debate Excerpt.
     Keep your response concise.
 
     Debate Excerpt: "{text}"
@@ -77,7 +79,9 @@ def fallacy_classification(text, run_local =True):
     print('Propmting GPT')
     # Call ChatGPT API for fallacy detection or other tasks
     if run_local:
-        return local_llm_call(prompt)
+        llm_output = local_llm_call(prompt)
+        LAST_RESPONCE = f'Last Debate Excerpt: {text}\n {llm_output}'
+        return llm_output
     else:
 
         response = openai.ChatCompletion.create(
@@ -88,9 +92,9 @@ def fallacy_classification(text, run_local =True):
             ],
         )
     
-    gpt3_output = response['choices'][0]['message']['content'].strip() # Extract and clean the output text
-    # print("GPT-3 Output:", gpt3_output)
-    return gpt3_output
+    llm_output = response['choices'][0]['message']['content'].strip() # Extract and clean the output text
+    # print("GPT-3 Output:", llm_output)
+    return llm_output
 
 
 def is_a_complete_statement(text):

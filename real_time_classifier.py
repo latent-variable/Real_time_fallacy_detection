@@ -53,7 +53,7 @@ def transcription_callback(new_text):
     # print("\nTranscribed Text:", text)
    
     # Call chatgpt for fallacy classification
-    if len(WHISPER_TEXTS) > 8:
+    if len(WHISPER_TEXTS) >= 8:
         if len(WHISPER_TEXTS) % 4 == 0:
         # if is_a_complete_statement(text):
             GPT_TEXTS.append(fallacy_classification(text))
