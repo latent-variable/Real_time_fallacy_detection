@@ -7,12 +7,12 @@ import numpy as np
 
 from audio import find_input_device_index, find_output_device_index
 from audio import FORMAT, CHANNELS, RATE, CHUNK
-from gpt import fallacy_classification, is_a_complete_statement
+from gpt import fallacy_classification
 
 # Global variables 
 WHISPER_TEXTS = []
 GPT_TEXTS = []
-MAX_SEGEMENTS = 8
+MAX_SEGEMENTS = 6
 audio_buffer_lock = threading.Lock()
 
 def save_byte_buffer(audio, audio_buffer, byte_size_chunk):
@@ -42,37 +42,47 @@ def get_last_segments(text_list):
     # Get the last N segments from the list
     last_n_segments = text_list[-MAX_SEGEMENTS:]
      # Combine them into a single string
-    combined_text = " ".join(last_n_segments)
+    combined_text = "".join(last_n_segments)
     return combined_text
 
-def transcription_callback(new_text):
+
+def clean_transcript(text):
+    cleaned_text = text.strip()
+    if cleaned_text == 'you':
+        return ''
+    if cleaned_text == 'Thank you.':
+        return ''
+    if cleaned_text == '.':
+        return ''
+    return cleaned_text
+
+def transcription_callback(new_text, use_gpt):
     global WHISPER_TEXTS, GPT_TEXTS  # Declare the list as global so we can append to it
-    WHISPER_TEXTS.append(new_text + '\n')
 
-    text = get_last_segments( WHISPER_TEXTS )
-    # print("\nTranscribed Text:", text)
-   
-    # Call chatgpt for fallacy classification
-    if len(WHISPER_TEXTS) >= 8:
+    cleaned_text = clean_transcript(new_text)
+    if len(cleaned_text):
+        print('Adding trancription')
+        WHISPER_TEXTS.append(cleaned_text + '\n')
+
+        text = get_last_segments( WHISPER_TEXTS )
+        # print("\nTranscribed Text:", text)
+    
+        # Call chatgpt for fallacy classification
         if len(WHISPER_TEXTS) % 4 == 0:
-        # if is_a_complete_statement(text):
-            GPT_TEXTS.append(fallacy_classification(text))
+            GPT_TEXTS.append(fallacy_classification(text, use_gpt))
 
-    # Get the last segments from the list
-    # WHISPER_TEXTS = WHISPER_TEXTS[-MAX_SEGEMENTS:]
 
-  
-def transcription(whs_model,  audio_tensor,  callback):
+def transcription(whs_model,  audio_tensor, use_gpt, callback):
     # Model call to transcribe the data
     try:
     
         transcription = whs_model.transcribe(audio_tensor, language='en', fp16=torch.cuda.is_available())
         # Process the transcription (e.g., fallacy detection)
-        callback(transcription['text'])
+        callback(transcription['text'], use_gpt)
     except Exception as e:
         print('Skipping transcription ..')
 
-def is_silence(audio_data, threshold=50):
+def is_silence(audio_data, threshold=100):
     """Check if the given audio data represents silence."""
     
     if np.abs(audio_data).mean() < threshold:
@@ -80,7 +90,7 @@ def is_silence(audio_data, threshold=50):
         return True
     return False
 
-def continuous_audio_transcription_and_classification(whs_model, stop_event):
+def continuous_audio_transcription_and_classification(whs_model, use_gpt, stop_event):
     print('Continuous audio transcription...')
     # Initialize PyAudio and open a stream
     audio = pyaudio.PyAudio()
@@ -119,10 +129,12 @@ def continuous_audio_transcription_and_classification(whs_model, stop_event):
         # Append to audio buffer
         with audio_buffer_lock:
             audio_buffer += audio_chunk
-
+        
+        #print('silence_counter', silence_counter)
         # When buffer reaches a certain size, or a silence break is detected send for transcription
-        if silence_counter > 5 or (len(audio_buffer) >= byte_size_chunk):
-                if (len(audio_buffer) >=  data_byte_size * 2  ):
+        if silence_counter > 5: 
+                if (len(audio_buffer) >=  data_byte_size * 3  ):
+                    
                     silence_counter = 0  # Reset the counter
                     # print('len(audio_buffer)', len(audio_buffer))
                     # Create a new thread for transcription
@@ -130,7 +142,7 @@ def continuous_audio_transcription_and_classification(whs_model, stop_event):
                     with audio_buffer_lock:
                         # Change dtype based on your bit depth
                         audio_tensor = get_audio_tensor(audio_buffer)
-                    transcribe_thread = threading.Thread(target=transcription, args=(whs_model, audio_tensor, transcription_callback))
+                    transcribe_thread = threading.Thread(target=transcription, args=(whs_model, audio_tensor, use_gpt, transcription_callback))
                     transcribe_thread.start()
                     with audio_buffer_lock:
                         audio_buffer = bytearray()  # Clear the buffer
