@@ -47,8 +47,7 @@ I build the application using Anaconda with python 3.9 on windows
     ```
     pip install -r requirements.txt
     ```
-6. Installing VB-AUDIO, to forward audio ouput as an input device (*Optional, but I don't know how to redirect audio otherwise) 
-    [VB-Audio](https://vb-audio.com/Cable/)
+6. Installing [VB-Audio](https://vb-audio.com/Cable/), to forward audio ouput as an input device (*Optional, but I don't know how to redirect audio otherwise)
 
 ## Usage
 
