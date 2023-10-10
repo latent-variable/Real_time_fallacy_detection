@@ -7,8 +7,6 @@ This project aims to perform real-time fallacy detection during events like pres
 ![Alt text](img/Fallacy_classification.PNG)
 [Watch Video](https://www.youtube.com/watch?v=PdhrTjia_pM)
 
-
-
 ## Features
 
 - **Real-time Audio Transcription**: Uses OpenAI's Whisper ASR model for accurate real-time transcription.
@@ -79,11 +77,12 @@ Press the `Esc` key to close the application.
 You can configure the audio input and outsource in the `settings.ini`.
 - **device_input_name = VB-Audio**  <- must have 
 - **device_output_name = Headphones (2- Razer** <- replace with your own 
+*Note: when the application loads if will redirect the audio back to the output device
 
 [LLM Settings]
 - **instruction_template = mistral-openorca** <- replace with the model specific template
+*Note: this is a custom template, which you will likely note have in your text-generation-webui
 
-*Note: when the application loads if will redirect the audio back to the output device
 
 Rename the `api_key.txt.template` to `api_key.txt` and add your OpenAI API key to it.
 
