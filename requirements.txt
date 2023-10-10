@@ -1,14 +1,14 @@
 
-# Core Libraries
-PyQt5==5.15.4
-PyAudio==0.2.11
-
-# API Libraries
-openai==0.27.0
-
-# Additional Libraries
-numpy==1.21.2
-torch==1.9.1
-
-# OpenAI Whisper ASR
-openai-whisper 
+openai==0.28.1
+openai-whisper==20230918
+PyAudio==0.2.13
+PyQt5==5.15.9
+PyQt5-Qt5==5.15.2
+PyQt5-sip==12.12.2
+pytube==15.0.0
+tokenizers==0.13.3
+torchmetrics==1.2.0
+--extra-index-url https://download.pytorch.org/whl/cu116
+torch==1.13.1+cu116 
+torchvision==0.14.1+cu116 
+torchaudio==0.13.1

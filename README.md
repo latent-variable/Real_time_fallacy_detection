@@ -18,28 +18,38 @@ This project aims to perform real-time fallacy detection during events like pres
 - **Save analyzed data**: SAVE to a JSON file for further analysis
 
 ## Dependencies
-
-- PyQt5
-- PyAudio
-- OpenAI's Whisper ASR and ChatGPT API
+- Anaconda
+- PyQt5 - Overlay
+- PyAudio - Audio processing
+- openai-whisper - ASR
+- openai - ChatGPT API
+- torch with cuda, for real time transtriction 
 - Have the text-generation-webui running with the API flag 
-- (any other dependencies)
 
 ## Installation
+I build the application using Anaconda with python 3.9 on windows 
 
 1. Clone the repository:
     ```
-    git clone https://github.com/your_username/real-time-fallacy-detection.git
+    git clone https://github.com/latent-variable/Real_time_fallacy_detection.git
     ```
 2. Navigate to the project directory:
     ```
     cd real-time-fallacy-detection
     ```
-3. Install the required packages:
+3. Create a conda environment:
+    ```
+    conda create --name rtfd python=3.9
+    ```
+4. Activate the created environment:
+    ```
+    conda activate rtfd
+    ```
+5. Install the required packages:
     ```
     pip install -r requirements.txt
     ```
-4. Installing VB-AUDIO, to forward audio ouput as an input device (*Optional, but I don't know how to redirect audio otherwise) 
+6. Installing VB-AUDIO, to forward audio ouput as an input device (*Optional, but I don't know how to redirect audio otherwise) 
     (VB-Audio)[https://vb-audio.com/Cable/]
 
 ## Usage
@@ -66,7 +76,9 @@ Press the `Esc` key to close the application.
 
 You can configure the audio input and outsource in the `settings.ini`.
 - **device_input_name = VB-Audio**  <- must have 
-- **device_output_name = Headphones (2- Razer**
+- **device_output_name = Headphones (2- Razer** <- replace with your own 
+
+*Note when the application loads if will redirect the audion back to the output device
 
 Rename the `api_key.txt.template` to `api_key.txt` and add your OpenAI API key to it.
 
