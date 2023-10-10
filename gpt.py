@@ -44,7 +44,8 @@ def fallacy_classification(transcript, use_gpt = False):
     if not use_gpt:
         print('Prompting Local LLM')
         llm_response  = local_llm_call(prompt)
-        if 'ß' in llm_response:
+        # Catch model answer collapse 
+        if 'ß' in llm_response: 
             llm_response = ''
         # print(f'{prompt}\n\n {llm_response}')
     else:

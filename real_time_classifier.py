@@ -48,6 +48,9 @@ def get_last_segments(text_list):
 
 def clean_transcript(text):
     cleaned_text = text.strip()
+    # The following are whisper transcriptions
+    # that happend in complete silence,
+    # so I am filtering them out
     if cleaned_text == 'you':
         return ''
     if cleaned_text == 'Thank you.':
