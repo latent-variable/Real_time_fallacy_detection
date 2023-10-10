@@ -1,5 +1,5 @@
 import requests
-
+import configparser
 # For local streaming, the websockets are hosted without ssl - http://
 HOST = 'localhost:5000'
 URI = f'http://{HOST}/api/v1/generate'
@@ -9,6 +9,16 @@ URI = f'http://{HOST}/api/v1/generate'
 
 
 def local_llm_call(prompt):
+     
+    # Initialize ConfigParser
+    config = configparser.ConfigParser()
+
+    # Read settings.ini file
+    config.read('settings.ini')
+    # Get values
+    instruction_template = config.get('LLM Settings', 'instruction_template')
+
+
     request = {
         'prompt': prompt,
         'max_new_tokens': 250,
@@ -18,7 +28,7 @@ def local_llm_call(prompt):
         # Generation params. If 'preset' is set to different than 'None', the values
         # in presets/preset-name.yaml are used instead of the individual numbers.
         'preset': 'Divine Intellect',
-        'instruction_template': 'mistral-openorca',
+        'instruction_template': instruction_template,
         
         'do_sample': True,
         'temperature': 0.7,

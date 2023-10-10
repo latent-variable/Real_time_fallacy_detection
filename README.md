@@ -50,7 +50,7 @@ I build the application using Anaconda with python 3.9 on windows
     pip install -r requirements.txt
     ```
 6. Installing VB-AUDIO, to forward audio ouput as an input device (*Optional, but I don't know how to redirect audio otherwise) 
-    (VB-Audio)[https://vb-audio.com/Cable/]
+    [VB-Audio](https://vb-audio.com/Cable/)
 
 ## Usage
 
@@ -58,6 +58,8 @@ Run the main script to start the application:
 ```
 python main.py [--use_gpt4 --use_gpt3]
 ```
+
+If you plan to use your local LLM, please have the text-generation-webui running with the --api flag
 
 **Note**: The application routes the audio to VB-AUDIO for processing and then redirects it back to the user for playback. 
 
@@ -73,12 +75,15 @@ The application will display an overlay with two sections:
 Press the `Esc` key to close the application.
 
 ## Configuration
-
+[Audio Settings]
 You can configure the audio input and outsource in the `settings.ini`.
 - **device_input_name = VB-Audio**  <- must have 
 - **device_output_name = Headphones (2- Razer** <- replace with your own 
 
-*Note when the application loads if will redirect the audion back to the output device
+[LLM Settings]
+- **instruction_template = mistral-openorca** <- replace with the model specific template
+
+*Note: when the application loads if will redirect the audio back to the output device
 
 Rename the `api_key.txt.template` to `api_key.txt` and add your OpenAI API key to it.
 

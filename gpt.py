@@ -46,7 +46,7 @@ def fallacy_classification(transcript, use_gpt = False):
         llm_response  = local_llm_call(prompt)
         if 'ß' in llm_response:
             llm_response = ''
-        print(f'{prompt}\n\n {llm_response}')
+        # print(f'{prompt}\n\n {llm_response}')
     else:
         print(f'Prompting {use_gpt}')
         response = openai.ChatCompletion.create(
