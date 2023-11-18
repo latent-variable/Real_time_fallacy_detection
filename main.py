@@ -6,22 +6,23 @@ from overlay import launch_overlay
 
 def get_inputs():
     parser = argparse.ArgumentParser(description='Toggle between Local LLM and ChatGPT.')
-    parser.add_argument('--use_gpt4', action='store_true', default=False, help='Will use use ChatGPT with GPT-4 otherwise, by defualt it use a local LLM thorugh the text-generation-webui API')
-    parser.add_argument('--use_gpt3', action='store_true', default=False, help='Will use use ChatGPT with GPT-3-Turbo otherwise, by defualt it use a local LLM thorugh the text-generation-webui API')
-    args = parser.parse_args()
-    use_gpt = False
-
- 
-    if args.use_gpt4:
-        use_gpt = 'gpt-4'
-    if args.use_gpt3:
-        use_gpt = 'gpt-3.5-turbo'
+    parser.add_argument('--auto', action='store_true', default=False, help='Automatically get commentary')
+    parser.add_argument('--local_whisper', action='store_true', default=False, help='Run whisper locally instead of through api')
     
-    return use_gpt
+    # Parse the arguments
+    args = parser.parse_args()
 
-def get_whisper_model():
-   
-    whs_model = load_model()
+    # Extract the specific arguments
+    auto = args.auto
+    local_whisper = args.local_whisper
+
+    return auto, local_whisper
+
+def get_whisper_model(local_whisper):
+    if local_whisper:
+        whs_model = load_model()
+    else:
+        whs_model = None
    
     return whs_model
 
@@ -33,9 +34,9 @@ def main(whs_model, use_gpt):
 
 if __name__ == "__main__":
 
-    use_gpt =  get_inputs()
-    whs_model = get_whisper_model()
-    main(whs_model, use_gpt)
+    auto, local_whisper =  get_inputs()
+    whs_model = get_whisper_model(local_whisper)
+    main(whs_model, auto)
 
 
 

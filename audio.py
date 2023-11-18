@@ -1,6 +1,8 @@
 import wave
+import pygame
 import pyaudio
 import configparser
+from pydub import AudioSegment
 
 # Audio format Parameters for whisper
 FORMAT = pyaudio.paInt16  # 16-bit depth
@@ -126,7 +128,23 @@ def save_audio_frames(audio, frames):
     print(f"Audio saved as {WAVE_OUTPUT_FILENAME}")
 
 
+def change_playback_speed(audio_file, speed=1.2):
+    sound = AudioSegment.from_file(audio_file)
+    sound_with_altered_frame_rate = sound._spawn(sound.raw_data, overrides={
+        "frame_rate": int(sound.frame_rate * speed)
+    })
+    
+    sound_with_altered_frame_rate.set_frame_rate(sound.frame_rate).export(audio_file, format="mp3")
+    return audio_file
+
+def play_audio(filename):
+    pygame.mixer.init()
+    pygame.mixer.music.load(filename)
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy():  # Wait for audio to finish playing
+        pygame.time.Clock().tick(10)
+
+
+
 if __name__=='__main__':
     record_short_audio()
-    # print_input_devices()
-    # print_output_devices()

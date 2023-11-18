@@ -7,7 +7,7 @@ def get_model_options():
 def load_model():
     # Selected and load from the list of available models that can fit in your system
     # model = "large-v2"
-    model = "medium"
+    model = "medium" #"base"
     print(f'Loading the {model} model...')
     model = whisper.load_model(model)
     print('Model loaded')
