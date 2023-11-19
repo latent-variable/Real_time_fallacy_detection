@@ -1,7 +1,8 @@
 import wave
-import pygame
 import pyaudio
 import configparser
+import librosa
+import soundfile as sf
 from pydub import AudioSegment
 
 # Audio format Parameters for whisper
@@ -128,21 +129,46 @@ def save_audio_frames(audio, frames):
     print(f"Audio saved as {WAVE_OUTPUT_FILENAME}")
 
 
-def change_playback_speed(audio_file, speed=1.2):
-    sound = AudioSegment.from_file(audio_file)
-    sound_with_altered_frame_rate = sound._spawn(sound.raw_data, overrides={
-        "frame_rate": int(sound.frame_rate * speed)
-    })
+def change_playback_speed(audio_file, speed=1.25):
+       # Load the audio file with librosa
+    y, sr = librosa.load(audio_file, sr=None)
     
-    sound_with_altered_frame_rate.set_frame_rate(sound.frame_rate).export(audio_file, format="mp3")
+    # Use librosa's effects.time_stretch for time-stretching without pitch change
+    y_fast = librosa.effects.time_stretch(y, rate=speed)
+    
+    # Write the altered audio back to a file
+    sf.write(audio_file, y_fast, sr)
+    
     return audio_file
 
 def play_audio(filename):
-    pygame.mixer.init()
-    pygame.mixer.music.load(filename)
-    pygame.mixer.music.play()
-    while pygame.mixer.music.get_busy():  # Wait for audio to finish playing
-        pygame.time.Clock().tick(1)
+
+     # Open the audio file
+    wf = wave.open(filename, 'rb')
+    
+    # Create a PyAudio instance
+    p = pyaudio.PyAudio()
+    
+    # Open an output stream
+    stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
+                    channels=wf.getnchannels(),
+                    rate=wf.getframerate(),
+                    output=True)
+    
+    # Read data in chunks
+    data = wf.readframes(1024)
+    
+    # Play the audio file
+    while len(data) > 0:
+        stream.write(data)
+        data = wf.readframes(1024)
+    
+    # Close the stream
+    stream.stop_stream()
+    stream.close()
+    
+    # Terminate the PyAudio instance
+    p.terminate()
 
 
 

@@ -1,6 +1,6 @@
 import io
 import json
-from prompt import get_prompt
+from prompt import get_prompt, SYSTEM_Commentary
 import pyaudio
 from pydub import AudioSegment
 from openai import OpenAI
@@ -52,18 +52,13 @@ def text_fallacy_classification(formatted_base64_image, transcript):
    
 
     try:
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {api_key}"
-        }
-
         response = client.chat.completions.create(
             model ="gpt-3.5-turbo",
             messages =  [
                 {"role": "system", 
                  "content":[{
                      "type": "text", 
-                     "text":"You are an advanced AI assistant designed to impartially analyze political arguments and debates. Using real-time detection of logical fallacies and data-driven insights, you aid in enhancing the public's understanding of political discourse. Your objective analysis supports users in making informed decisions about political candidates."
+                     "text":SYSTEM_Commentary
                      }],
                 }, 
                 {  "role": "user",
@@ -79,8 +74,6 @@ def text_fallacy_classification(formatted_base64_image, transcript):
             max_tokens = 100
         )
       
-
- 
         llm_response  = response.choices[0].message.content.strip() # Extract and clean the output text
         print("GPT-Vision Output:", llm_response)
 
@@ -91,7 +84,7 @@ def text_fallacy_classification(formatted_base64_image, transcript):
     return llm_response
 
 
-def openAI_TTS(text, filename='mp3s/tts_audio.mp3'):
+def openAI_TTS(text, filename='audio/tts_audio.wav'):
     response = client.audio.speech.create(
                     model="tts-1",
                     voice="onyx",
@@ -111,10 +104,10 @@ def openAI_STT(audio_bytearray):
     buffer.seek(0)
 
     # Debug: Save the buffer to a file to check the conversion
-    with open("mp3s/sst_audio.mp3", "wb") as f:
+    with open("audio/sst_audio.mp3", "wb") as f:
         f.write(buffer.getvalue())
 
-    audio_file= open("mp3s/sst_audio.mp3", "rb")
+    audio_file= open("audio/sst_audio.mp3", "rb")
     transcription_object = client.audio.transcriptions.create(
                                 model="whisper-1", 
                                 file=audio_file
