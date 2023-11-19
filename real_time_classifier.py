@@ -12,7 +12,6 @@ from openai_wrapper import openAI_STT
 
 # Global variables 
 WHISPER_TEXTS = []
-MAX_SEGEMENTS = 6
 audio_buffer_lock = threading.Lock()
 # Global variables for running average
 running_avg_buffer = deque(maxlen=30)  # Adjust maxlen to your preference
@@ -54,37 +53,12 @@ def get_audio_tensor(audio_buffer):
 
     return audio_tensor
 
-def get_last_segments(text_list):
-    # Get the last N segments from the list
-    last_n_segments = text_list[-MAX_SEGEMENTS:]
-     # Combine them into a single string
-    combined_text = "".join(last_n_segments)
-    return combined_text
-
-
-def clean_transcript(text):
-    cleaned_text = text.strip()
-    # The following are whisper transcriptions
-    # that happend in complete silence,
-    # so I am filtering them out
-    if cleaned_text == 'you':
-        return ''
-    if cleaned_text == 'Thank you.':
-        return ''
-    if cleaned_text == '.':
-        return ''
-    return cleaned_text
-
 def transcription_callback(new_text):
     global WHISPER_TEXTS  # Declare the list as global so we can append to it
-
-    cleaned_text = clean_transcript(new_text)
+    cleaned_text = new_text.strip()
     if len(cleaned_text):
         # print('Adding trancription')
         WHISPER_TEXTS.append(cleaned_text + '\n')
-
-        # text = get_last_segments( WHISPER_TEXTS )
-        # print(text)
 
     
 def transcription(whs_model,  audio_buffer, callback):
@@ -103,16 +77,20 @@ def transcription(whs_model,  audio_buffer, callback):
         # Process the transcription (e.g., fallacy detection)
         callback(trascribed_text)
     except Exception as e:
+        print(e)
         print('Skipping transcription ..')
 
 def update_running_average(new_value):
     running_avg_buffer.append(new_value)
     return np.mean(running_avg_buffer)
 
-def is_silence(audio_data, base_threshold=100):
+def is_silence(audio_data, base_threshold=150):
     """Check if the given audio data represents silence based on running average."""
     current_level = np.abs(audio_data).mean()
     running_avg = update_running_average(current_level)
+
+    if running_avg < base_threshold: # this might indicate just silence 
+        return False
     
     dynamic_threshold = running_avg * average_threshold_ratio
     threshold = max(dynamic_threshold, base_threshold)
@@ -121,14 +99,12 @@ def is_silence(audio_data, base_threshold=100):
 
     return current_level < threshold
 
-
-
 def continuous_audio_transcription(whs_model, stop_event):
     print('Continuous audio transcription...')
     global input_stream, output_stream
     # Initialize empty audio buffer
     audio_buffer = bytearray()
-    seconds = 10 
+    seconds = 6
     data_byte_size = 32_000 # 1 second of data 
     byte_size_chunk = data_byte_size * seconds 
     silence_counter = 0 
@@ -153,13 +129,8 @@ def continuous_audio_transcription(whs_model, stop_event):
         # print('silence_counter', silence_counter)
         # When buffer reaches a certain size, or a silence break is detected send for transcription
         if silence_counter > 3: 
-                if (len(audio_buffer) >=  data_byte_size * 3  ):
-                    
+                if (len(audio_buffer) >=  byte_size_chunk  ):
                     silence_counter = 0  # Reset the counter
-                    # print('len(audio_buffer)', len(audio_buffer))
-                    # Create a new thread for transcription
-                    # save_byte_buffer(audio, audio_buffer, byte_size_chunk)
-                   
                     transcribe_thread = threading.Thread(target=transcription, args=(whs_model, audio_buffer, transcription_callback))
                     transcribe_thread.start()
                     with audio_buffer_lock:

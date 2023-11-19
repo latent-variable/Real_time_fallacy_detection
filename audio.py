@@ -142,7 +142,7 @@ def play_audio(filename):
     pygame.mixer.music.load(filename)
     pygame.mixer.music.play()
     while pygame.mixer.music.get_busy():  # Wait for audio to finish playing
-        pygame.time.Clock().tick(10)
+        pygame.time.Clock().tick(1)
 
 
 

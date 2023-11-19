@@ -2,7 +2,7 @@ import sys
 import base64
 import threading
 from PyQt5.QtCore import Qt, QTimer, QPoint, QByteArray, QBuffer, QIODevice
-from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QVBoxLayout, QWidget, QGridLayout, QScrollArea, QSizeGrip, QPushButton
+from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QGridLayout, QScrollArea, QSizeGrip, QPushButton
 from PyQt5.QtGui import QPixmap
 
 from openai_wrapper import text_fallacy_classification, openAI_TTS
@@ -20,6 +20,7 @@ class TransparentOverlay(QMainWindow):
         self.auto = auto
         self.dragPos = QPoint()
         self.opacity = 0.6
+        self.is_tts_enabled = False
 
         self.initUI()
         
@@ -56,9 +57,10 @@ class TransparentOverlay(QMainWindow):
         self.scroll_area2.setWidgetResizable(True)
 
     
-        # Style labels with bold text and increased font size
-        self.whisper_label.setStyleSheet('background-color: lightblue; font-weight: bold; font-size: 16px;')
-        self.chatgpt_label.setStyleSheet('background-color: lightgreen; font-weight: bold; font-size: 16px;')
+        # Style labels with bold text and increased font size, using professional grey shades
+        self.whisper_label.setStyleSheet('background-color: #dcdcdc; font-weight: bold; font-size: 12px; color: black;')
+        self.chatgpt_label.setStyleSheet('background-color: #696969; font-weight: bold; font-size: 15px; color: white;')
+
        
         # Layout setup
         # QVBoxLayout for the scroll areas
@@ -96,7 +98,33 @@ class TransparentOverlay(QMainWindow):
         # Add a button for screen capture
         self.capture_button = QPushButton('Capture Screen', self)
         self.capture_button.clicked.connect(self.start_capture_thread)
-        vbox_layout.addWidget(self.capture_button)
+        
+        # Toogles
+        self.toggle_whisper_button = QPushButton('Toggle Whisper', self)
+        self.toggle_whisper_button.clicked.connect(self.toggle_whisper_box)
+
+        self.toggle_chatgpt_button = QPushButton('Toggle ChatGPT', self)
+        self.toggle_chatgpt_button.clicked.connect(self.toggle_chatgpt_box)
+
+        self.toggle_tts_button = QPushButton('Toggle TTS', self)
+        self.toggle_tts_button.clicked.connect(self.toggle_tts)
+
+        self.capture_button.setStyleSheet("QPushButton { background-color: grey; font-weight: bold;  }")
+        self.toggle_whisper_button.setStyleSheet("QPushButton { background-color: green; font-weight: bold;  }")
+        self.toggle_chatgpt_button.setStyleSheet("QPushButton { background-color: green; font-weight: bold; }")
+        self.toggle_tts_button.setStyleSheet("QPushButton { background-color: red; font-weight: bold; }")
+
+        # Create a horizontal layout for the buttons
+        button_layout = QHBoxLayout()
+
+        # Add buttons to the horizontal layout
+        button_layout.addWidget(self.capture_button)
+        button_layout.addWidget(self.toggle_whisper_button)
+        button_layout.addWidget(self.toggle_chatgpt_button)
+        button_layout.addWidget(self.toggle_tts_button)
+
+        # Now add the horizontal layout of buttons to the main vertical layout
+        vbox_layout.addLayout(button_layout)
     
 
     def update_labels(self):
@@ -115,8 +143,30 @@ class TransparentOverlay(QMainWindow):
         self.chatgpt_label.setMouseTracking(True)
         self.scroll_area1.setMouseTracking(True)
         self.scroll_area2.setMouseTracking(True)
+
+    def toggle_whisper_box(self):
+        is_visible = self.scroll_area1.isVisible()
+        self.scroll_area1.setVisible(not is_visible)
+        self.toggle_whisper_button.setStyleSheet(
+            "QPushButton { background-color: %s; }" % ('green' if not is_visible else 'red')
+        )
+
+    def toggle_chatgpt_box(self):
+        is_visible = self.scroll_area2.isVisible()
+        self.scroll_area2.setVisible(not is_visible)
+        self.toggle_chatgpt_button.setStyleSheet(
+            "QPushButton { background-color: %s; }" % ('green' if not is_visible else 'red')
+        )
+
+    def toggle_tts(self):
+        self.is_tts_enabled = not self.is_tts_enabled  # Assume this flag exists
+        # Update the button color based on the state
+        self.toggle_tts_button.setStyleSheet(
+            "QPushButton { background-color: %s; }" % ('green' if self.is_tts_enabled else 'red')
+        )
+        print(f'TTS is set to {self.is_tts_enabled}')
         
-    
+
     def mousePressEvent(self, event):
         self.dragPos = event.globalPos()
      
@@ -204,10 +254,11 @@ class TransparentOverlay(QMainWindow):
 
         GPT_TEXTS.append(text)
 
-        # Play GPT4
-        # audio_file = openAI_TTS(text)
-        # audio_file = change_playback_speed(audio_file)
-        # play_audio(audio_file)
+        if self.is_tts_enabled:
+            # Play GPT4
+            audio_file = openAI_TTS(text)
+            audio_file = change_playback_speed(audio_file)
+            play_audio(audio_file)
 
         
             

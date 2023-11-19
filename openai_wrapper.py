@@ -1,12 +1,11 @@
 import io
 import json
-from local_llm import local_llm_call
-from prompt import get_prompt, INSTRUCTION
+from prompt import get_prompt
 import pyaudio
 from pydub import AudioSegment
 from openai import OpenAI
 
-
+from audio import  CHANNELS, RATE
 # Function to read API key from a file
 def read_api_key(file_path = r'./api_key.txt'):
     with open(file_path, 'r') as file:
@@ -59,7 +58,7 @@ def text_fallacy_classification(formatted_base64_image, transcript):
         }
 
         response = client.chat.completions.create(
-            model ="gpt-4",
+            model ="gpt-3.5-turbo",
             messages =  [
                 {"role": "system", 
                  "content":[{
@@ -92,7 +91,7 @@ def text_fallacy_classification(formatted_base64_image, transcript):
     return llm_response
 
 
-def openAI_TTS(text, filename='tts/audio.mp3'):
+def openAI_TTS(text, filename='mp3s/tts_audio.mp3'):
     response = client.audio.speech.create(
                     model="tts-1",
                     voice="onyx",
@@ -101,17 +100,33 @@ def openAI_TTS(text, filename='tts/audio.mp3'):
     response.stream_to_file(filename)
     return filename
 
-def openAI_STT(audio_buffer):
-  # Assuming audio_buffer is already a BytesIO object with audio data
+def openAI_STT(audio_bytearray):
 
-    # Reset buffer's position to the beginning
-    audio_buffer.seek(0)
+    # Convert the bytearray to an AudioSegment
+    audio = AudioSegment.from_raw(io.BytesIO(audio_bytearray), format="raw", frame_rate=RATE, channels=CHANNELS, sample_width=2)
 
-    transcript = client.audio.transcriptions.create(
-        model="whisper-1", 
-        file=audio_buffer
-        )
-    text = transcript['text']
+    # Convert the audio to a supported format (e.g., mp3)
+    buffer = io.BytesIO()
+    audio.export(buffer, format="mp3")
+    buffer.seek(0)
+
+    # Debug: Save the buffer to a file to check the conversion
+    with open("mp3s/sst_audio.mp3", "wb") as f:
+        f.write(buffer.getvalue())
+
+    audio_file= open("mp3s/sst_audio.mp3", "rb")
+    transcription_object = client.audio.transcriptions.create(
+                                model="whisper-1", 
+                                file=audio_file
+                                )
+
+     # Access the transcription text
+    try:
+        text = transcription_object.text
+    except AttributeError:
+        # Handle the case where 'text' attribute does not exist
+        # This might involve logging an error or returning a default value
+        text = ""
 
     return text
 
