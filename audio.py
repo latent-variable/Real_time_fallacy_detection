@@ -1,6 +1,9 @@
 import wave
 import pyaudio
 import configparser
+import librosa
+import soundfile as sf
+from pydub import AudioSegment
 
 # Audio format Parameters for whisper
 FORMAT = pyaudio.paInt16  # 16-bit depth
@@ -126,7 +129,48 @@ def save_audio_frames(audio, frames):
     print(f"Audio saved as {WAVE_OUTPUT_FILENAME}")
 
 
+def change_playback_speed(audio_file, speed=1.25):
+       # Load the audio file with librosa
+    y, sr = librosa.load(audio_file, sr=None)
+    
+    # Use librosa's effects.time_stretch for time-stretching without pitch change
+    y_fast = librosa.effects.time_stretch(y, rate=speed)
+    
+    # Write the altered audio back to a file
+    sf.write(audio_file, y_fast, sr)
+    
+    return audio_file
+
+def play_audio(filename):
+
+     # Open the audio file
+    wf = wave.open(filename, 'rb')
+    
+    # Create a PyAudio instance
+    p = pyaudio.PyAudio()
+    
+    # Open an output stream
+    stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
+                    channels=wf.getnchannels(),
+                    rate=wf.getframerate(),
+                    output=True)
+    
+    # Read data in chunks
+    data = wf.readframes(1024)
+    
+    # Play the audio file
+    while len(data) > 0:
+        stream.write(data)
+        data = wf.readframes(1024)
+    
+    # Close the stream
+    stream.stop_stream()
+    stream.close()
+    
+    # Terminate the PyAudio instance
+    p.terminate()
+
+
+
 if __name__=='__main__':
     record_short_audio()
-    # print_input_devices()
-    # print_output_devices()
