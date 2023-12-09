@@ -47,7 +47,11 @@ I build the application using Anaconda with python 3.9 on windows
     ```
     pip install -r requirements.txt
     ```
-6. Installing [VB-Audio](https://vb-audio.com/Cable/), to forward audio ouput as an input device (*Optional, but I don't know how to redirect audio otherwise)
+6. (Optional) Install the required packages to run whisper locally:
+    ```
+    pip install -r requirements_local_whisper.txt
+    ```
+7. Installing [VB-Audio](https://vb-audio.com/Cable/), to forward audio ouput as an input device (*Optional, but I don't know how to redirect audio otherwise)
 
 ## Usage
 
@@ -77,8 +81,9 @@ You can configure the audio input and outsource in the `settings.ini`.
 - **device_input_name = VB-Audio**  <- must have 
 - **device_output_name = Headphones (2- Razer** <- replace with your own 
 *Note: when the application loads if will redirect the audio back to the output device
+![Alt text](img/audio_selection.png)
 
-[LLM Settings]
+[Local LLM Settings]
 - **instruction_template = mistral-openorca** <- replace with the model specific template
 *Note: this is a custom template, which you will likely note have in your text-generation-webui
 

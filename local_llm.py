@@ -16,7 +16,7 @@ def local_llm_call(prompt):
     # Read settings.ini file
     config.read('settings.ini')
     # Get values
-    instruction_template = config.get('LLM Settings', 'instruction_template')
+    instruction_template = config.get('Local LLM Settings', 'instruction_template')
 
 
     request = {

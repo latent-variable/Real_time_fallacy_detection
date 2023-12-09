@@ -100,10 +100,10 @@ class TransparentOverlay(QMainWindow):
         self.capture_button.clicked.connect(self.start_capture_thread)
         
         # Toogles
-        self.toggle_whisper_button = QPushButton('Toggle Whisper', self)
+        self.toggle_whisper_button = QPushButton('Toggle Transcript', self)
         self.toggle_whisper_button.clicked.connect(self.toggle_whisper_box)
 
-        self.toggle_chatgpt_button = QPushButton('Toggle ChatGPT', self)
+        self.toggle_chatgpt_button = QPushButton('Toggle Analysis', self)
         self.toggle_chatgpt_button.clicked.connect(self.toggle_chatgpt_box)
 
         self.toggle_tts_button = QPushButton('Toggle TTS', self)

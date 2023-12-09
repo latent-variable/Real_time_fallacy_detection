@@ -66,7 +66,7 @@ def get_few_shot_examples(file_name=r'Data/data.json', N=5):
 
 def get_prompt(transcript):
 
-    prompt = f'{INSTRUCTION_Commentary}\n\"{transcript}\"'
+    prompt = f'{INSTRUCTION_Debates}\n\"{transcript}\"'
     return prompt
 
 if __name__=="__main__":

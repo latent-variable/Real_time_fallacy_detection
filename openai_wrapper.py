@@ -1,6 +1,7 @@
 import io
+import os
 import json
-from prompt import get_prompt, SYSTEM_Commentary
+from prompt import get_prompt, SYSTEM_Commentary, SYSTEM_Debates
 import pyaudio
 from pydub import AudioSegment
 from openai import OpenAI
@@ -8,15 +9,21 @@ from openai import OpenAI
 from audio import  CHANNELS, RATE
 # Function to read API key from a file
 def read_api_key(file_path = r'./api_key.txt'):
-    with open(file_path, 'r') as file:
-        return file.read().strip()
-    
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            return file.read().strip()
+    else:
+        return None
 
 pyaudio.PyAudio()
 
 # Initialize API Client
 api_key = read_api_key()
-client = OpenAI(api_key = read_api_key())
+if api_key:
+    client = OpenAI(api_key = read_api_key())  
+else:
+    client = None
+
 LAST_RESPONCE = ''
 
 def save_to_json_file(transcript, instruction, response, file_name=r'Data/data.json'):
@@ -58,7 +65,7 @@ def text_fallacy_classification(formatted_base64_image, transcript):
                 {"role": "system", 
                  "content":[{
                      "type": "text", 
-                     "text":SYSTEM_Commentary
+                     "text":SYSTEM_Debates
                      }],
                 }, 
                 {  "role": "user",
