@@ -1,4 +1,5 @@
 import whisper
+import configparser
 
 def get_model_options():
     models = whisper.available_models()
@@ -6,11 +7,20 @@ def get_model_options():
 
 def load_model():
     # Selected and load from the list of available models that can fit in your system
-    # model = "large-v2"
-    model = "medium" #"base"
-    print(f'Loading the {model} model...')
-    model = whisper.load_model(model)
+
+     # Initialize ConfigParser
+    config = configparser.ConfigParser()
+
+    # Read settings.ini file
+    config.read('settings.ini')
+    # Get values
+    whisper_model = config.get('Local Wisper Settings', 'whisper_model')
+
+    # Load the model
+    print(f'Loading the {whisper_model} model...')
+    model = whisper.load_model(whisper_model)
     print('Model loaded')
+    
     return model
 
 def test_whisper(file='audio_chunk.wav'):

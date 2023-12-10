@@ -9,7 +9,7 @@ def get_inputs():
     parser = argparse.ArgumentParser(description='Toggle between Local LLM and ChatGPT.')
     parser.add_argument('--auto', action='store_true', default=False, help='Automatically get commentary')
     parser.add_argument('--api_whisper', action='store_true', default=False, help='Run whisper through api instead of locally')
-    parser.add_argument('--api_gpt', action='store_true', default=False, help='Will use use ChatGPT with GPT-4-Turbo otherwise, by defualt will use a local LLM thorugh the text-generation-webui API')
+    parser.add_argument('--api_gpt', action='store_true', default=False, help='Will use use gpt api otherwise, by defualt will use a local LLM through the text-generation-webui API')
 
     
     # Parse the arguments
@@ -34,10 +34,10 @@ def get_whisper_model(api_whisper):
    
     return whs_model
 
-def main(whs_model, use_gpt):
+def main(whs_model, auto):
 
     # Launch the GUI in the main thread
-    launch_overlay(whs_model, use_gpt )
+    launch_overlay(whs_model, auto )
     
 
 if __name__ == "__main__":

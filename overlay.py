@@ -91,15 +91,15 @@ class TransparentOverlay(QMainWindow):
         self.timer.start(500)
 
          # Create a label to display the screenshot
-        self.screenshot_label = QLabel(self)
-        self.screenshot_label.setWordWrap(True)
-        vbox_layout.addWidget(self.screenshot_label)
+        # self.screenshot_label = QLabel(self)
+        # self.screenshot_label.setWordWrap(True)
+        # vbox_layout.addWidget(self.screenshot_label)
 
         # Add a button for screen capture
-        self.capture_button = QPushButton('Capture Screen', self)
-        self.capture_button.clicked.connect(self.start_capture_thread)
+        self.capture_button = QPushButton('Analyze Transcript', self)
+        self.capture_button.clicked.connect(self.start_text_thread)
         
-        # Toogles
+        # Toogles   
         self.toggle_whisper_button = QPushButton('Toggle Transcript', self)
         self.toggle_whisper_button.clicked.connect(self.toggle_whisper_box)
 
@@ -109,6 +109,7 @@ class TransparentOverlay(QMainWindow):
         self.toggle_tts_button = QPushButton('Toggle TTS', self)
         self.toggle_tts_button.clicked.connect(self.toggle_tts)
 
+        # Style buttons
         self.capture_button.setStyleSheet("QPushButton { background-color: grey; font-weight: bold;  }")
         self.toggle_whisper_button.setStyleSheet("QPushButton { background-color: green; font-weight: bold;  }")
         self.toggle_chatgpt_button.setStyleSheet("QPushButton { background-color: green; font-weight: bold; }")
@@ -185,9 +186,13 @@ class TransparentOverlay(QMainWindow):
             self.transcription_thread.join()  # Optional: Wait for the thread to finish
             self.close()
 
-    def start_capture_thread(self):
+    def start_img_text_thread(self):
         capture_thread = threading.Thread(target=self.capture_and_process)
         capture_thread.start()
+
+    def start_text_thread(self):
+        process_thread = threading.Thread(target=self.process_text)
+        process_thread.start()
 
     def capture_and_process(self):
          # Increase transparency to 100%
@@ -218,7 +223,6 @@ class TransparentOverlay(QMainWindow):
         # Convert screenshot to QPixmap and display it in the label
         pixmap = QPixmap(screenshot)
         self.screenshot_label.setPixmap(pixmap.scaled(self.screenshot_label.size(), Qt.KeepAspectRatio))
-        print(self.auto)
 
         # Convert QPixmap to QImage
         image = screenshot.toImage()
@@ -260,7 +264,18 @@ class TransparentOverlay(QMainWindow):
             audio_file = change_playback_speed(audio_file)
             play_audio(audio_file)
 
-        
+    def process_text(self):
+        # Here, you can use formatted_base64_image with your API
+        # For demonstration, let's just print it
+        text = text_fallacy_classification(None, get_whisper_transcription())
+
+        GPT_TEXTS.append(text)
+
+        if self.is_tts_enabled:
+            # Play GPT4
+            audio_file = openAI_TTS(text)
+            audio_file = change_playback_speed(audio_file)
+            play_audio(audio_file)
             
 
 def get_whisper_transcription():

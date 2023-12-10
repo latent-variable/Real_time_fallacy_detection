@@ -3,17 +3,17 @@
 
 ## Overview
 
-This project aims to perform real-time fallacy detection during events like presidential debates. It uses the [Whisper](https://github.com/openai/whisper) for audio transcription.  For natural language understanding and fallacy classification you have the option to use the OpenAI ChatGPT API or a local LLM through the [text-generation-webui](https://github.com/oobabooga/text-generation-webui). I was able to run both whisper with the [Mistral-7B-OpenOrca-GPTQ](https://huggingface.co/TheBloke/Mistral-7B-OpenOrca-GPTQ) on a single RTX 3090.
+This project aims to perform real-time fallacy detection during events like presidential debates. It uses the [Whisper](https://github.com/openai/whisper) for audio transcription.  For natural language understanding and fallacy classification you have the option to use the OpenAI ChatGPT API or a local LLM through the [text-generation-webui](https://github.com/oobabooga/text-generation-webui). I was able to run both whisper with the [IconicAI_NeuralHermes-2.5-Mistral-7B-exl2-5bpw](https://huggingface.co/IconicAI/NeuralHermes-2.5-Mistral-7B-exl2-5bpw) on a laptop with 3080TI 16GB of VRAM.
 ![Alt text](img/Fallacy_classification.PNG)
-[Watch Video](https://www.youtube.com/watch?v=PdhrTjia_pM)
+[Watch Video](https://www.youtube.com/watch?v=I9ScRL_10So)
 
 ## Features
 
-- **Real-time Audio Transcription**: Uses OpenAI's Whisper ASR model for accurate real-time transcription.
+- **Real-time Audio Transcription**: Uses OpenAI's Whisper ASR model for accurate real-time transcription locally or through API access.
 - **Fallacy Detection**: Utilizes OpenAI's ChatGPT to classify and identify fallacies in real-time.
 - **Overlay Display**: Provides a transparent overlay display to show both the transcription and fallacy detection results.
-- **Text analysis**: using GPT-3/4 or local LLM
-- **Save analyzed data**: SAVE to a JSON file for further analysis
+- **Text analysis**: using GPT-3/4 or local LLM. 
+
 
 ## Dependencies
 - Anaconda
@@ -57,7 +57,12 @@ I build the application using Anaconda with python 3.9 on windows
 
 Run the main script to start the application:
 ```
-python main.py [--use_gpt4 --use_gpt3]
+python main.py 
+optional arguments:
+  -h, --help     show this help message and exit
+  --auto         Automatically get commentary
+  --api_whisper  Run whisper through api instead of locally
+  --api_gpt      Will use use gpt api otherwise, by defualt will use a local LLM through the text-generation-webui API
 ```
 
 If you plan to use your local LLM, please have the text-generation-webui running with the --api flag

@@ -1,12 +1,16 @@
 import io
 import os
 import json
-from prompt import get_prompt, SYSTEM_Commentary, SYSTEM_Debates
 import pyaudio
+import configparser
 from pydub import AudioSegment
 from openai import OpenAI
 
 from audio import  CHANNELS, RATE
+from prompt import get_prompt, SYSTEM_Commentary, SYSTEM_Debates
+
+from local_llm import local_llm_call
+
 # Function to read API key from a file
 def read_api_key(file_path = r'./api_key.txt'):
     if os.path.exists(file_path):
@@ -24,7 +28,13 @@ if api_key:
 else:
     client = None
 
-LAST_RESPONCE = ''
+HISTORY = []
+HISTORY.append({"role": "system", 
+                 "content":[{
+                     "type": "text", 
+                     "text":SYSTEM_Debates
+                     }],
+                })
 
 def save_to_json_file(transcript, instruction, response, file_name=r'Data/data.json'):
     # Prepare new data entry
@@ -52,37 +62,34 @@ def save_to_json_file(transcript, instruction, response, file_name=r'Data/data.j
 def text_fallacy_classification(formatted_base64_image, transcript):
     # Create a more nuanced prompt for the LLM
     prompt = get_prompt(transcript)
-    
+    # Call the local LLM if client is None
+    if client is None:
+        print(f'Prompting local LLM...')
+        llm_response = local_llm_call(prompt)
+        return llm_response
+
+
+    # Initialize ConfigParser
+    config = configparser.ConfigParser()
+
+    # Read settings.ini file
+    config.read('settings.ini')
+    # Get values
+    gpt_model = config.get('ChatGPT API Settings', 'gpt_model')
+
 
     # Call ChatGPT API for fallacy detection or other tasks
-    print(f'Prompting gpt-4 with vision...')
-   
-
+    print(f'Prompting openAI...')
     try:
+        HISTORY.append({"role": "user", "content": [{"type": "text", "text": prompt}]})
         response = client.chat.completions.create(
-            model ="gpt-3.5-turbo",
-            messages =  [
-                {"role": "system", 
-                 "content":[{
-                     "type": "text", 
-                     "text":SYSTEM_Debates
-                     }],
-                }, 
-                {  "role": "user",
-                    "content": [
-                    {
-                        "type": "text",
-                        "text": prompt
-                    }
-                   
-                    ]
-                }
-            ],
-            max_tokens = 100
+            model=gpt_model,
+            messages=HISTORY,
+            max_tokens=150
         )
-      
-        llm_response  = response.choices[0].message.content.strip() # Extract and clean the output text
-        print("GPT-Vision Output:", llm_response)
+        llm_response = response.choices[0].message.content.strip()  # Extract and clean the output text
+        HISTORY.append({"role": "assistant", "content": [{"type": "text", "text": llm_response}]})
+        print(llm_response)
 
 
     except Exception as e:

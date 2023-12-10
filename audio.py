@@ -59,8 +59,10 @@ def find_output_device_index():
         # Search for VB-Audio in the device name
         if device_output_name in device_name:
             return i
+    
+    # If no device is found, assert False
+    assert False, "Could not find output device. Check settings.ini file"
    
-    return None
 
 def find_input_device_index():
     
@@ -83,8 +85,9 @@ def find_input_device_index():
         if device_input_name in device_name:
             return i
     
-    # Return None if not found
-    return None
+    # If no device is found, assert False
+    assert False, "Could not find input device. Check settings.ini file"
+
 
 def record_short_audio():
 
@@ -173,4 +176,7 @@ def play_audio(filename):
 
 
 if __name__=='__main__':
-    record_short_audio()
+    print_input_devices()
+    print_output_devices()
+
+    # record_short_audio()

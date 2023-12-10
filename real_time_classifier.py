@@ -23,12 +23,13 @@ input_stream = audio.open(format=FORMAT, channels=CHANNELS, rate=RATE,
                               input=True, frames_per_buffer=CHUNK,
                               input_device_index=input_device_index)
 
-
+print('Input device index:', input_device_index)
 output_device_index = find_output_device_index()
 output_stream = audio.open(format=FORMAT, channels=CHANNELS, rate=RATE,
                                output=True, frames_per_buffer=CHUNK,
                                output_device_index=output_device_index)
     
+print('Output device index:', output_device_index)
 
 def save_byte_buffer(audio, audio_buffer, byte_size_chunk):
     # Save to a WAV file for verification
