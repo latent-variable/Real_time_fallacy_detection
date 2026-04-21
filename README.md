@@ -1,7 +1,7 @@
 
 # Real-time Fallacy Detection
 
-**Cited in peer-reviewed academic research**: "A Few Hypocrites: Few-Shot Learning and Subtype Definitions for Detecting Hypocrisy Accusations in Online Climate Change Debates" (arXiv:2409.16807).
+**Cited in peer-reviewed academic research**: "A Few Hypocrites: Few-Shot Learning and Subtype Definitions for Detecting Hypocrisy Accusations in Online Climate Change Debates" [arXiv:2409.16807](https://arxiv.org/abs/2409.16807).
 
 ## Overview
 
