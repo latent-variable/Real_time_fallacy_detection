@@ -1,6 +1,8 @@
 
 # Real-time Fallacy Detection
 
+**Cited in peer-reviewed academic research**: "A Few Hypocrites: Few-Shot Learning and Subtype Definitions for Detecting Hypocrisy Accusations in Online Climate Change Debates" (arXiv:2409.16807).
+
 ## Overview
 
 This project aims to perform real-time fallacy detection during events like presidential debates. It uses the [Whisper](https://github.com/openai/whisper) for audio transcription.  For natural language understanding and fallacy classification you have the option to use the OpenAI ChatGPT API or a local LLM through the [text-generation-webui](https://github.com/oobabooga/text-generation-webui). I was able to run both whisper with the [IconicAI_NeuralHermes-2.5-Mistral-7B-exl2-5bpw](https://huggingface.co/IconicAI/NeuralHermes-2.5-Mistral-7B-exl2-5bpw) on a laptop with 3080TI 16GB of VRAM.
