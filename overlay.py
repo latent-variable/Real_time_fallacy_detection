@@ -13,11 +13,12 @@ from audio import play_audio, change_playback_speed
 GPT_TEXTS = []
 class TransparentOverlay(QMainWindow):
     
-    def __init__(self, whs_model, auto):
+    def __init__(self, whs_model, auto, api_gpt):
         super().__init__()
 
         self.whs_model = whs_model
         self.auto = auto
+        self.api_gpt = api_gpt
         self.dragPos = QPoint()
         self.opacity = 0.6
         self.is_tts_enabled = False
@@ -254,7 +255,7 @@ class TransparentOverlay(QMainWindow):
 
         # Here, you can use formatted_base64_image with your API
         # For demonstration, let's just print it
-        text = text_fallacy_classification(formatted_base64_image, get_whisper_transcription())
+        text = text_fallacy_classification(formatted_base64_image, get_whisper_transcription(), self.api_gpt)
 
         GPT_TEXTS.append(text)
 
@@ -267,7 +268,7 @@ class TransparentOverlay(QMainWindow):
     def process_text(self):
         # Here, you can use formatted_base64_image with your API
         # For demonstration, let's just print it
-        text = text_fallacy_classification(None, get_whisper_transcription())
+        text = text_fallacy_classification(None, get_whisper_transcription(), self.api_gpt)
 
         GPT_TEXTS.append(text)
 
@@ -291,11 +292,11 @@ def get_chatgpt_output():
     else:
         return [""]
 
-def launch_overlay(whs_model, use_gpt):
+def launch_overlay(whs_model, auto, api_gpt):
     app = QApplication(sys.argv)
-    overlay = TransparentOverlay(whs_model, use_gpt)
+    overlay = TransparentOverlay(whs_model, auto, api_gpt)
     overlay.show()
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
-    launch_overlay()
+    launch_overlay(None, False, False)

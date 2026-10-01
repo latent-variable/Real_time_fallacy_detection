@@ -34,10 +34,10 @@ def get_whisper_model(api_whisper):
    
     return whs_model
 
-def main(whs_model, auto):
+def main(whs_model, auto, api_gpt):
 
     # Launch the GUI in the main thread
-    launch_overlay(whs_model, auto )
+    launch_overlay(whs_model, auto, api_gpt)
     
 
 if __name__ == "__main__":
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     whs_model = get_whisper_model(api_whisper)
 
     # Run the main function
-    main(whs_model, auto)
+    main(whs_model, auto, api_gpt)
 
 
 

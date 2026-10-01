@@ -136,11 +136,5 @@ def continuous_audio_transcription(whs_model, stop_event):
                     transcribe_thread.start()
                     with audio_buffer_lock:
                         audio_buffer = bytearray()  # Clear the buffer
-        else:
-            with audio_buffer_lock:
-                # Append to audio buffer
-                audio_buffer += audio_chunk
-
-            
     print('Exiting')
     

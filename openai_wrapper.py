@@ -59,14 +59,17 @@ def save_to_json_file(transcript, instruction, response, file_name=r'Data/data.j
         json.dump(all_data, json_file)
 
 
-def text_fallacy_classification(formatted_base64_image, transcript):
+def text_fallacy_classification(formatted_base64_image, transcript, use_api=False):
     # Create a more nuanced prompt for the LLM
     prompt = get_prompt(transcript)
-    # Call the local LLM if client is None
-    if client is None:
+    # Use the local LLM unless the API option was explicitly selected.
+    if not use_api:
         print(f'Prompting local LLM...')
         llm_response = local_llm_call(prompt)
         return llm_response
+
+    if client is None:
+        raise RuntimeError('OpenAI API selected, but api_key.txt is missing or empty.')
 
 
     # Initialize ConfigParser
